@@ -46,8 +46,9 @@ export default async function DashboardPage() {
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6"><p className="text-slate-400">Visible shops</p><p className="mt-2 text-xl font-bold">{shops.length}</p></div>
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6"><p className="text-slate-400">Tenant isolation</p><p className="mt-2 text-xl font-bold text-emerald-400">RLS enforced</p></div>
           </section>
-          <section className="mt-8 grid gap-4 md:grid-cols-2">
+          <section className="mt-8 grid gap-4 md:grid-cols-3">
             <Link href="/dashboard/catalogue" className="rounded-3xl border border-cyan-900 bg-slate-900 p-6 transition hover:border-cyan-500"><p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-400">Phase 2</p><h2 className="mt-2 text-xl font-bold">Master Catalogue</h2><p className="mt-2 text-sm text-slate-400">Shared phone models and variants used by every retailer.</p></Link>
+            <Link href="/dashboard/catalogue/images" className="rounded-3xl border border-violet-900 bg-slate-900 p-6 transition hover:border-violet-500"><p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-400">Catalogue Media</p><h2 className="mt-2 text-xl font-bold">Product Images</h2><p className="mt-2 text-sm text-slate-400">Upload and replace approved master handset images stored in Supabase.</p></Link>
             <Link href="/dashboard/inventory" className="rounded-3xl border border-emerald-900 bg-slate-900 p-6 transition hover:border-emerald-500"><p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-400">Phase 2</p><h2 className="mt-2 text-xl font-bold">All Shop Inventory</h2><p className="mt-2 text-sm text-slate-400">Review retailer-specific pricing, stock, warranty and offers.</p></Link>
           </section>
           <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-6">
