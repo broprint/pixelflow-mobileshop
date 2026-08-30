@@ -44,7 +44,7 @@ export default async function CataloguePage({
 
   const { data: products } = await supabase
     .from("master_products")
-    .select("id,brand,model,category,image_url,is_active,product_variants(id,sku,storage_gb,ram_gb,color,network,region,is_active)")
+    .select("id,brand,model,category,image_url,is_active,product_variants(id,sku,storage_gb,ram_gb,color,network,region,is_active,market_price_references(retailer_name,price_kwd,product_url,observed_at))")
     .order("brand")
     .order("model");
 
@@ -135,6 +135,9 @@ export default async function CataloguePage({
               <div className="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
                 {product.product_variants.map((variant) => {
                   const alreadyAdded = existingVariantIds.has(variant.id);
+                  const marketRefs = [...(variant.market_price_references ?? [])].sort((a, b) => new Date(b.observed_at).getTime() - new Date(a.observed_at).getTime());
+                  const latestMarket = marketRefs[0];
+
                   return (
                     <div key={variant.id} className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-violet-50/50 p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -152,12 +155,27 @@ export default async function CataloguePage({
                         {variant.region ? <span className="rounded-full bg-white px-2.5 py-1 shadow-sm">{variant.region}</span> : null}
                       </div>
 
+                      {latestMarket ? (
+                        <div className="mt-4 rounded-xl border border-sky-100 bg-sky-50 px-3 py-3">
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-sky-600">Kuwait market reference</p>
+                          <div className="mt-1 flex items-end justify-between gap-3">
+                            <div>
+                              <p className="text-lg font-black text-slate-900">KD {Number(latestMarket.price_kwd).toFixed(3)}</p>
+                              <p className="text-xs text-slate-500">{latestMarket.retailer_name}</p>
+                            </div>
+                            {latestMarket.product_url ? <a href={latestMarket.product_url} target="_blank" rel="noreferrer" className="text-xs font-bold text-sky-700 hover:text-sky-900">View source ↗</a> : null}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-white/70 px-3 py-3 text-xs text-slate-400">Market price not captured yet</div>
+                      )}
+
                       {profile.role === "shop_admin" && !alreadyAdded && variant.is_active ? (
                         <form action={addVariantToShop} className="mt-5 grid gap-3 border-t border-slate-100 pt-5">
                           <input type="hidden" name="variant_id" value={variant.id} />
                           <div className="grid gap-3 sm:grid-cols-2">
                             <label className="text-xs font-bold text-slate-500">Selling Price (KD)
-                              <input name="price_kwd" type="number" min="0" step="0.001" required placeholder="0.000" className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
+                              <input name="price_kwd" type="number" min="0" step="0.001" required placeholder={latestMarket ? Number(latestMarket.price_kwd).toFixed(3) : "0.000"} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
                             </label>
                             <label className="text-xs font-bold text-slate-500">Stock
                               <input name="stock_quantity" type="number" min="0" step="1" required defaultValue="0" className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
